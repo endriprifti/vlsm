@@ -1,0 +1,74 @@
+/* 
+ *  Endri Prifti
+ *  Ekzistenca e zgjidhjes ne VLSM/FLSM
+ *  (c) Copyright 2011 
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. 
+ *  If not, see http://www.gnu.org/licenses/.
+*/
+
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+inline int nr_bitesh(int nr_subneteve) {
+     return (int) ceil(log2(nr_subneteve));
+}
+
+bool flsm(vector<int> &nr_hosteve, int &nr_subneteve, int &bite1subneti) {
+     int bite_rrjeti = bite1subneti + nr_bitesh(nr_subneteve);
+     int grupi_max = *max_element(nr_hosteve.begin(), nr_hosteve.end());
+
+     return (bite_rrjeti + nr_bitesh(grupi_max)) <= 32;
+}
+
+bool vlsm(vector<int> &nr_hosteve, int &nr_subneteve, int &bite1subneti) {
+    float shuma_grupeve = 0;
+
+    for(int i=0; i<nr_hosteve.size(); i++) {
+        int total = nr_bitesh(nr_hosteve[i] + 2);
+        shuma_grupeve += pow(2.0, (double) total);
+    }
+
+    return shuma_grupeve <= pow(2.0, 32.0 - bite1subneti);
+}
+
+bool testo(vector<int> &nr_hosteve, int &nr_subneteve, int &bite1subneti) {
+     cout << "FLSM : " << (flsm(nr_hosteve, nr_subneteve, bite1subneti) ? "PO" : "JO") << endl;
+     cout << "VLSM : " << (vlsm(nr_hosteve, nr_subneteve, bite1subneti) ? "PO" : "JO") << endl;
+}
+
+int main() {
+    vector<int> nr_hosteve;
+    int nr_subneteve;
+    int bite1subneti;
+
+    cout << "Numri i subneteve: ";
+    cin >> nr_subneteve;
+
+    nr_hosteve.resize(nr_subneteve);
+
+    cout << "Numri i biteve 1 te subnet maskes: ";
+    cin >> bite1subneti;
+
+    cout << "Numri i hosteve per cdo subnet" << endl;
+    for(int i=0; i<nr_subneteve;) cin >> nr_hosteve[i++];
+
+    testo(nr_hosteve, nr_subneteve, bite1subneti);
+
+    while(true);
+}
